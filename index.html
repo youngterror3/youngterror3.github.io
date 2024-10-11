@@ -3,59 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Web Page</title>
+    <title>Upload PDF</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
+            background-color: #f9f9f9;
+            padding: 20px;
         }
-        header {
-            background-color: #333;
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
             color: white;
-            padding: 1rem;
-            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        main {
-            margin: 20px;
+
+        button:hover {
+            background-color: #218838;
         }
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+
+        .message {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Welcome to My Web Page</h1>
-</header>
+    <h1>Upload PDF Document</h1>
+    
+    <form id="pdfUploadForm" enctype="multipart/form-data">
+        <label for="pdfFile">Choose a PDF document to upload:</label>
+        <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf" required>
+        <button type="submit">Upload PDF</button>
+    </form>
 
-<main>
-    <h2>About Me</h2>
-    <p>Hello! I am learning HTML and this is my simple web page.</p>
+    <div class="message" id="responseMessage"></div>
 
-    <h3>Hobbies</h3>
-    <ul>
-        <li>Reading</li>
-        <li>Programming</li>
-        <li>Traveling</li>
-    </ul>
+    <script>
+        document.getElementById('pdfUploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the default form submission
 
-    <h3>Contact</h3>
-    <p>Email: example@example.com</p>
-</main>
+            const formData = new FormData();
+            const pdfFile = document.getElementById('pdfFile').files[0];
 
-<footer>
-    <p>&copy; 2024 My Web Page</p>
-</footer>
+            if (!pdfFile) {
+                alert('Please select a PDF file to upload.');
+                return;
+            }
+
+            formData.append('pdfFile', pdfFile);
+
+            fetch('http://localhost:8080/upload-pdf', {  // Replace with your Java backend URL
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('responseMessage').innerHTML = `<p>${data.message}</p>`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('responseMessage').innerHTML = '<p>An error occurred while uploading the file.</p>';
+            });
+        });
+    </script>
 
 </body>
 </html>
-
